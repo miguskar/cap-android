@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <PreferenceCategory android:title="@string/settings_category_general" >
+        <EditTextPreference
+            android:title="@string/settings_username_text"
+            android:defaultValue="@string/settings_username_default_value"
+            android:dialogTitle="@string/settings_username_text"
+            android:key="setting_username"
+            android:persistent="true"/>
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/settings_category_sync" >
+        <EditTextPreference
+            android:title="@string/settings_update_interval_text"
+            android:defaultValue="15"
+            android:dialogTitle="@string/settings_update_interval_text"
+            android:key="@string/settings_update_interval_key"
+            android:persistent="true" />
+        
+        <EditTextPreference
+            android:title="@string/settings_update_interval_background_text"
+            android:defaultValue="30"
+            android:dialogTitle="@string/settings_update_interval_background_text"
+            android:key="@string/settings_update_interval_background_key"
+            android:persistent="true" />
+        </PreferenceCategory>
+        
+    <PreferenceCategory android:title="@string/settings_category_notifications" >
+        <CheckBoxPreference
+            android:title="Nothing here yet :)"
+            />
+        </PreferenceCategory>
+
+</PreferenceScreen>
