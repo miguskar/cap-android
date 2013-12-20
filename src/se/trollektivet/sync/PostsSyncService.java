@@ -14,8 +14,8 @@ public class PostsSyncService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.i("SERVICE", "Service created");
-		// android.os.Debug.waitForDebugger();
+		//Log.i("SERVICE", "Service created");
+		//android.os.Debug.waitForDebugger();
 		/*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable

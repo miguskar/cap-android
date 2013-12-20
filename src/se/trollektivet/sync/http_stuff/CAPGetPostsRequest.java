@@ -4,9 +4,9 @@ public class CAPGetPostsRequest extends CAPBaseHttpRequest {
 
 	private static final String ORDER_ID = "getNewPostsMobile";
 	
-	public CAPGetPostsRequest(String username, String lastPost) {
+	public CAPGetPostsRequest(String id, String lastPost) {
 		super(ORDER_ID);
-		addParameter("username", username);
+		addParameter("user_id", id);
 		addParameter("last_post", lastPost);
 	}
 

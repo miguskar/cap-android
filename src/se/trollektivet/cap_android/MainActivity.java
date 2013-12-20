@@ -1,6 +1,7 @@
 package se.trollektivet.cap_android;
 
 import se.trollektivet.database.Post;
+import se.trollektivet.sync.IdFetcher;
 import se.trollektivet.sync.PostsContentObserver;
 import se.trollektivet.sync.PostsProvider;
 import se.trollektivet.sync.PostsSyncAdapter;
@@ -19,6 +20,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -37,7 +39,7 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 	// An account type, in the form of a domain name
 	public static final String ACCOUNT_TYPE = "se.trollektivet";
 	// The account name
-	public static final String ACCOUNT = "dummyaccount";
+	public static final String ACCOUNT = "troll";
 
 	ContentResolver resolver;
 	CursorAdapter postsAdapter;
@@ -46,7 +48,6 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 	private String username;
 	private int userId;
 	
-	private SharedPreferences.OnSharedPreferenceChangeListener preferenceListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,19 +69,7 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 		
 		account = CreateSyncAccount(this);
 		
-		preferenceListener = new OnSharedPreferenceChangeListener() {
-			
-			@Override
-			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-				Log.e("KEY:", key);
-				if (key == "setting_username")
-					username = sharedPreferences.getString(key, null);
-
-				if (key == "user_id") {
-					userId = sharedPreferences.getInt(key, 0);
-				}
-			}
-		};
+		prefs.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	public static Account CreateSyncAccount(Context context) {
@@ -103,41 +92,31 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 
 	@Override
 	protected void onResume() {
-		prefs.registerOnSharedPreferenceChangeListener(preferenceListener);
+		super.onResume();
+		new IdFetcher(prefs).execute();
 		// set sync!
 		long frequency = Long.parseLong(prefs.getString(getString(R.string.settings_update_interval_key), "15"));
 		ContentResolver.addPeriodicSync(account, PostsProvider.AUTHORITY, new Bundle(), frequency);
 		requestSync(false, null);
-		Log.e("RESUME", "" + frequency);
 
 		MultiAutoCompleteTextView inputField = (MultiAutoCompleteTextView) findViewById(R.id.postInput);
-		inputField.setOnEditorActionListener(new OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				String text = v.getText().toString();
-				if (text == null || text.replace(" ", "") == "")
-					return true;
-				
-				createNewPost(text);
-				v.setText("");
-
-				return true;
-			}
-		});
+		inputField.setOnEditorActionListener(listener);
 		inputField.setImeActionLabel("Post", KeyEvent.KEYCODE_ENTER);
-		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		prefs.unregisterOnSharedPreferenceChangeListener(preferenceListener);
 		super.onPause();
 		// init sync!
 		long frequency = 60L * Long.parseLong(prefs.getString(
 				getString(R.string.settings_update_interval_background_key), "30"));
-		Log.e("PAUSE", "" + frequency);
 		ContentResolver.addPeriodicSync(account, PostsProvider.AUTHORITY, new Bundle(), frequency);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		prefs.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -202,14 +181,29 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		Log.e("KEY:", key);
-		if (key == "setting_username")
+		if (key.equals("setting_username"))
 			this.username = sharedPreferences.getString(key, null);
 
-		if (key == "user_id") {
+		if (key.equals("user_id")) {
 			this.userId = sharedPreferences.getInt(key, 0);
 		}
 
 	}
 
+	
+	//FULSKIT BLÄ
+	private OnEditorActionListener listener = new OnEditorActionListener() {
+
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			String text = v.getText().toString();
+			if (text == null || text.replace(" ", "") == "")
+				return true;
+			
+			createNewPost(text);
+			v.setText("");
+
+			return true;
+		}
+	};
 }

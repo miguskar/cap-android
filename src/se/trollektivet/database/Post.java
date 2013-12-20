@@ -82,7 +82,6 @@ public class Post implements BaseColumns {
 			} catch (UnsupportedEncodingException e) {
 				Log.e("POSTS", e.getMessage());
 			}
-			//this.post = jo.getString(COLUMN_POST);
 		}
 		if (!jo.isNull(COLUMN_POSTER_ID))
 			this.posterId = jo.getInt(COLUMN_POSTER_ID);

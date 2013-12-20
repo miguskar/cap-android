@@ -78,14 +78,12 @@ public class PostsSyncAdapter extends AbstractThreadedSyncAdapter {
 			SyncResult syncResult) {
 		prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-		checkUserId();
-
 		if (bundle.getBoolean(NEW_POST_FLAG)) {
 			// TODO lägg till post i lokala databasen
 			sendNewPost(bundle);
 		}
 
-		List<Post> newPosts = getNewPosts(bundle.getString(USER_NAME), provider);
+		List<Post> newPosts = getNewPosts(provider);
 		Log.i("SYNC", "RECEIVED " + newPosts.size() + " new posts");
 		try {
 			for (Post p : newPosts) {
@@ -94,11 +92,9 @@ public class PostsSyncAdapter extends AbstractThreadedSyncAdapter {
 		} catch (RemoteException e) {
 			Log.e("POSTSSYNCADAPTER", "COULD NOT CREATE POST ON INSERT");
 		}
-		// TODO skapa ny metod som hämtar senaste postens (som någon annan
-		// gjort) cdate och skapar ett nytt CAPNewPostRequest och kör execute()
 	}
 
-	private List<Post> getNewPosts(String username, ContentProviderClient provider) {
+	private List<Post> getNewPosts(ContentProviderClient provider) {
 		String userId = Integer.toString(prefs.getInt(USER_ID, 0));
 		Cursor c = null;
 		JSONObject result = null;
@@ -108,9 +104,9 @@ public class PostsSyncAdapter extends AbstractThreadedSyncAdapter {
 			CAPGetPostsRequest request;
 
 			if (c.moveToFirst()) {
-				request = new CAPGetPostsRequest(username, c.getString(0));
+				request = new CAPGetPostsRequest(userId, c.getString(0));
 			} else {
-				request = new CAPGetPostsRequest(username, "0");
+				request = new CAPGetPostsRequest(userId, "0");
 			}
 			request.execute();
 			result = new JSONObject(request.getResultString());
@@ -133,10 +129,10 @@ public class PostsSyncAdapter extends AbstractThreadedSyncAdapter {
 					resultPosts.add(new Post(jsonPosts.getJSONObject(i)));
 				} catch (Exception e) {
 					Log.e("POSTSSYNCADAPTER", "COULD NOT CREATE POST: " + e.getMessage());
-				}
+				} 
 			}
 		} catch (JSONException e1) {
-			//
+			Log.e("OJDÅ HEHE", "SYNCADAPTER ERROR!!!! DET FANNS INGEN POSTS ARRAY I JSONET!!");
 		}
 
 		return resultPosts;
@@ -156,19 +152,5 @@ public class PostsSyncAdapter extends AbstractThreadedSyncAdapter {
 		request.checkResult();
 	}
 
-	private void checkUserId() {
-		if (prefs.getInt(USER_ID, 0) == 0) {
-			CAPNewIdRequest request = new CAPNewIdRequest();
-			int idValue = 0;
-
-			try {
-				request.execute();
-				idValue = request.getIdResult();
-			} catch (Exception e) {
-				Log.e("ERROR", e.getMessage());
-			}
-			prefs.edit().putInt(USER_ID, idValue).apply();
-			Log.i("IDCHECK", "YOUR ID IS: " + idValue);
-		}
-	}
+	
 }
