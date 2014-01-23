@@ -2,40 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="3dp">
-    
-    <TextView
-        android:id="@+id/posterName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:text="Micke"
-        android:textStyle="italic"
-        android:textColor="@android:color/black"
-        />
-    
-    <TextView
-        android:id="@+id/postTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:text="2012-04-13"
-        android:textStyle="italic"
-        android:textColor="@android:color/black"
-        />
-    
-    <TextView
-        android:paddingTop="3dp" 
-        android:id="@+id/postContent"
-        android:layout_below="@+id/posterName"
+    android:background="#5CB1F2"
+    android:paddingLeft="1dp"
+    android:paddingRight="1dp"
+    android:paddingBottom="1dp"
+    android:paddingTop="1dp" >
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Lite text blabla blablab alba blal"
-        android:autoLink="web"
-        android:textColor="@android:color/black"
-        />
-    
+        android:background="#FFFFFF"
+        android:padding="3dp">
+
+        <TextView
+            android:id="@+id/posterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Micke"
+            android:textColor="@android:color/black"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/postTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="2012-04-13"
+            android:textColor="@android:color/black"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/postContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/posterName"
+            android:autoLink="web"
+            android:paddingTop="3dp"
+            android:text="Lite text blabla blablab alba blal"
+            android:textColor="@android:color/black" />
+    </RelativeLayout>
 
 </RelativeLayout>

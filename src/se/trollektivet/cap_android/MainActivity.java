@@ -54,22 +54,24 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.settings, false);
-		ListView postsListView = (ListView) findViewById(R.id.postsListView);
-
+		prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		prefs.registerOnSharedPreferenceChangeListener(this);
+		new IdFetcher(prefs).execute();
+		this.username = prefs.getString("setting_username", null);
+		this.userId = prefs.getInt("user_id", 0);
+ 
 		// setup resolver and adapter
+		ListView postsListView = (ListView) findViewById(R.id.postsListView);
 		resolver = getContentResolver();
-		postsAdapter = new PostsListAdapter(this, null, 0);
+		postsAdapter = new PostsListAdapter(this, null, 0, userId);
 		postsListView.setAdapter(postsAdapter);
 
 		getLoaderManager().initLoader(0, null, this);
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		this.username = prefs.getString("setting_username", null);
-		this.userId = prefs.getInt("user_id", 0);
 		
 		account = CreateSyncAccount(this);
 		
-		prefs.registerOnSharedPreferenceChangeListener(this);
+		
 	}
 
 	public static Account CreateSyncAccount(Context context) {
@@ -93,7 +95,6 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 	@Override
 	protected void onResume() {
 		super.onResume();
-		new IdFetcher(prefs).execute();
 		// set sync!
 		long frequency = Long.parseLong(prefs.getString(getString(R.string.settings_update_interval_key), "15"));
 		ContentResolver.addPeriodicSync(account, PostsProvider.AUTHORITY, new Bundle(), frequency);
@@ -197,8 +198,10 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor>, O
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			String text = v.getText().toString();
-			if (text == null || text.replace(" ", "") == "")
+			if (text == null || text.replace(" ", "").equals("")) {
+				v.setText("");
 				return true;
+			}
 			
 			createNewPost(text);
 			v.setText("");

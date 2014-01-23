@@ -42,13 +42,13 @@ public abstract class CAPBaseHttpRequest extends HttpPost {
 	}
 	
 	public void execute() throws ClientProtocolException, IOException {
-		setEntity(new UrlEncodedFormEntity(parameters));
+		setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
 		
 		HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, 10000);
 		HttpConnectionParams.setSoTimeout(httpParams, 10000);
-		HttpProtocolParams.setContentCharset(httpParams, "iso-8859-1");
-		HttpProtocolParams.setHttpElementCharset(httpParams, "iso-8859-1");
+		HttpProtocolParams.setContentCharset(httpParams, "UTF-8");
+		HttpProtocolParams.setHttpElementCharset(httpParams, "UTF-8");
 		HttpClient httpclient = new DefaultHttpClient(httpParams);
 		
 		HttpResponse response = httpclient.execute(this);
@@ -81,7 +81,7 @@ public abstract class CAPBaseHttpRequest extends HttpPost {
 		String text = null;
 		try {
 			reader = new BufferedReader(
-					new InputStreamReader(is, "iso-8859-1"), 8);
+					new InputStreamReader(is, "UTF-8"), 8);
 		
 		StringBuilder sb = new StringBuilder();
 

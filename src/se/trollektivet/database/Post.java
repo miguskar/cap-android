@@ -26,7 +26,7 @@ public class Post implements BaseColumns {
 
 	public static final Uri POSTS_URI = Uri.parse("content://" + PostsProvider.AUTHORITY + "/posts");
 	public static final Uri LATEST_POST_URI = Uri.parse("content://" + PostsProvider.AUTHORITY + "/posts/latest");
-	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static final String TABLE_NAME = "posts";
 
@@ -46,7 +46,7 @@ public class Post implements BaseColumns {
 	private int posterId;
 
 	public Post(String post, String user, int posterId) {
-		this(post, DATE_FORMATTER.format(new Date(System.currentTimeMillis() / 1000L)), user, posterId);
+		this(post, DATE_FORMATTER.format(new Date(System.currentTimeMillis())), user, posterId);
 	}
 
 
